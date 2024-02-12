@@ -12,31 +12,34 @@ from renewable_maps.mapsetup import read_files
 from shapely.geometry import Point
 import logging
 
+logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger("renewable_maps")
+
 class PlotRES:
     def __init__(self, project, run_location: bool = True):
         self.project = project
         self.run_location = run_location
 
-        csvfile = open("renewable_maps/res_projects.csv", "r")
+        csvfile = open("renewable_maps/res_projects.csv", "r", encoding="utf8")
         reader = csv.DictReader(csvfile, delimiter=",")
         self.reader = reader
         self.csvfile = csvfile
 
     def extract_country_time(self):
-        logging.info("extracting country of the project and start year")
+        logger.info("extracting country of the project and start year")
         for data in self.reader:  # first loop finds project in CSV and extracts country
             if self.project == data["Project ID"]:
                 self.project_country = data["Country"]
                 if data["First Year of Project"] != "":
                     self.project_time = int(float(data["First Year of Project"]))
                 else:
-                    logging.info("no start date for project, setting it to 0")
+                    logger.info("no start date for project, setting it to 0")
                     self.project_time = 0
-                logging.info("country of the project and start year extracted")
+                logger.info("country of the project and start year extracted")
                 return self.project_country, self.project_time
 
     def add_to_dict(self):
-        logging.info("adding country RES data to appropriate dicts")
+        logger.info("adding country RES data to appropriate dicts")
         for (
             data
         ) in self.reader:  # 2nd loop will go through data and load them into lists
@@ -56,7 +59,7 @@ class PlotRES:
                         )
                         and data["Project ID"] == self.project
                     ):
-                        logging.info(
+                        logger.info(
                             "project does not have recognised type:(, skipping..."
                         )
                         return
@@ -90,7 +93,7 @@ class PlotRES:
 
     def dict_to_gdf(self, dictionary_series, project_type):
         if len(dictionary_series) < 1:
-            logging.info(
+            logger.info(
                 f"no data available in {self.project_country} for {project_type}",
             )
             return
@@ -113,14 +116,14 @@ class PlotRES:
                 "biomass": "#2ECB50",
             }
             plotting_color = project_colors[project_type]
-            logging.info(f"plotting data for {project_type}")
+            logger.info(f"plotting data for {project_type}")
             gdf.plot(
                 ax=self.ax, color=plotting_color, zorder=20, markersize=marker_size
             )
 
     def proj_to_gdf(self, dictionary_series, project_type):
         if len(dictionary_series) < 1:
-            logging.info(
+            logger.info(
                 f"no data available in {self.project_country} for {project_type}"
             )
             return
@@ -137,7 +140,7 @@ class PlotRES:
 
             icon_path = glob(
                 os.path.join(
-                    "renewable_maps/renewable_icons",
+                    "renewable_icons",
                     self.project_type,
                     "*.png",
                 )
@@ -149,7 +152,7 @@ class PlotRES:
                 alpha=0.9,
             )
 
-            logging.info(f"extent is {x0} {x1} {y0} {y1}")
+            logger.info(f"extent is {x0} {x1} {y0} {y1}")
 
             # project annotation
             annotation_pad = imagewidth / 2
@@ -159,7 +162,7 @@ class PlotRES:
                 alpha=0.8,
                 zorder=22,
                 size=12,
-                family="JostRegular",
+                family="DejaVu Sans",
                 bbox=dict(
                     facecolor="white",
                     alpha=0.5,
@@ -173,7 +176,7 @@ class PlotRES:
                 alpha=0.8,
                 zorder=22,
                 size=12,
-                family="JostRegular",
+                family="DejaVu Sans",
                 bbox=dict(
                     facecolor="none",
                     edgecolor="black",
@@ -184,9 +187,12 @@ class PlotRES:
 
     def export_plot(self):
         output_dir_local = "outputs"
+        if not os.path.exists(output_dir_local):
+            os.makedirs(output_dir_local)
         output_fp = f"{output_dir_local}/{self.project}_RESProjectMap.jpeg"
-        outputs_rem = output_dir_local.split("/")[:-1]
-        outputs_rem = "/".join(outputs_rem)
+        # outputs_rem = output_dir_local.split("/")[:-1]
+        # outputs_rem = "/".join(outputs_rem)
+        
 
         plt.savefig(
             f"{output_fp}",
@@ -198,12 +204,21 @@ class PlotRES:
         resized_image.save(f"{output_fp}")
         plt.clf()
         plt.close("all")
+        logger.info(f"plotting and export for {self.project} successful")
         return
 
     def main(self):
-        project_country, project_time = self.extract_country_time()
+        try:
+            project_country, project_time = self.extract_country_time()
+        except TypeError:
+            projectid = str(input("please re-enter project id : "))
+            try:
+                project_country, project_time = self.extract_country_time()
+            except:
+                raise ValueError("please check project id")
+                
 
-        logging.info(f"project in {project_country} starting in {project_time}")
+        logger.info(f"project in {project_country} starting in {project_time}")
 
         # adding csv data to dictionary lists
         (
@@ -229,7 +244,7 @@ class PlotRES:
         # checking if project_country is in countries_admin_0.shp
         countries_list = countries["ADMIN"].tolist()
         if project_country not in countries_list:
-            logging.info(f"ADMIN.shp_ERROR {project_country} not found in shapefile")
+            logger.info(f"ADMIN.shp_ERROR {project_country} not found in shapefile")
             return
 
         # setting the limits of the axes using extent shp
@@ -251,12 +266,8 @@ class PlotRES:
         self.ax = ax
         self.ylim = ylim
         self.xlim = xlim
+
         # PLOTTING SHAPEFILES
-        f_Regular = fm.FontEntry(
-            fname="../fonts/Jost/static/Jost-Regular.ttf",
-            name="JostRegular",
-        )
-        fm.fontManager.ttflist.insert(0, f_Regular)
 
         # plot land shapefile
         countries.plot(ax=ax, color="#EFEFEF", alpha=1)
@@ -281,7 +292,7 @@ class PlotRES:
             xlim[0] + (xlim[1] - xlim[0]) / 100,
             ylim[0] + (ylim[1] - ylim[0]) / 80,
             "Source: Verra VCS Registry",
-            fontdict={"family": "JostRegular", "color": "#424177", "size": 14},
+            fontdict={"family": "DejaVu Sans", "color": "#424177", "size": 14},
         )
 
         # plotting xy data
@@ -297,14 +308,10 @@ class PlotRES:
         ax.imshow(map_legend, extent=legend_extent, zorder=25, alpha=1)
 
         """------SAVING AND RESIZING IMAGE-----------"""
+        self.export_plot()
 
-        success, output_id = self.export_plot()
-        if success:
-            logging.info(f"plotting and export for {self.project} successfull")
-        output = None
-        output_id = None
+        return
 
-        return success, output, output_id
-
-run = PlotRES(237753)
+projectid = str(input("Enter the project id : "))
+run = PlotRES(projectid)
 run.main()

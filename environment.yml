@@ -1,0 +1,11 @@
+name: renewable_maps
+
+dependencies:
+  - python=3.11
+  - pandas
+  - geopandas
+  - shapely
+  - matplotlib
+  - shapely
+  # - pip:
+  #   - git+https://github.com/blaze/dask.git#egg=dask[complete]
