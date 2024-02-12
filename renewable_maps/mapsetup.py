@@ -9,13 +9,11 @@ import matplotlib.pyplot as plt
 
 def read_files(project_country):
 
-    # make dictionary 'dir' using file_directory.py
-    with open("config-tower.json") as director:
-        dir = director.read()
-        dir = json.loads(dir)
+    # make dictionary 'dir' 
+    dir = "shapefiles"
     # loading in countries
     countries_path = os.path.join(
-        dir["other_shapefiles_dir"],
+        dir,
         "ne_10m_admin_0_countries",
         "ne_10m_admin_0_countries.shp",
     )
@@ -23,7 +21,7 @@ def read_files(project_country):
 
     # loading in rivers
     rivers_path = os.path.join(
-        dir["other_shapefiles_dir"],
+        dir,
         "ne_10m_rivers_lake_centerlines",
         "ne_10m_rivers_lake_centerlines.shp",
     )
@@ -31,19 +29,19 @@ def read_files(project_country):
 
     # loading in lakes
     lakes_path = os.path.join(
-        dir["other_shapefiles_dir"], "ne_10m_lakes", "ne_10m_lakes.shp"
+        dir, "ne_10m_lakes", "ne_10m_lakes.shp"
     )
     lakes = gpd.read_file(lakes_path)
 
     # loading in oceans
     oceans_path = os.path.join(
-        dir["other_shapefiles_dir"], "ne_10m_ocean", "ne_10m_ocean.shp"
+        dir, "ne_10m_ocean", "ne_10m_ocean.shp"
     )
     oceans = gpd.read_file(oceans_path)
 
     # loading in state boundaries
     states_path = os.path.join(
-        dir["other_shapefiles_dir"],
+        dir,
         "ne_10m_admin_1_states_provinces_lines",
         "ne_10m_admin_1_states_provinces_lines.shp",
     )
@@ -51,7 +49,7 @@ def read_files(project_country):
 
     # loading in legend
     map_legend_path = os.path.join(
-        "renewable_maps", "renewable_icons", "map_legend.png"
+        "renewable_icons", "map_legend.png"
     )
     map_legend = plt.imread(map_legend_path)
 
