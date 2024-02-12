@@ -15,7 +15,7 @@ This gives insight into the additionality of renewable projects, showing how man
 
 &nbsp;3) Install the environment : `conda env create -f environment.yml`
 
-&nbsp;4) Activate the conda environment from the root of the repo: `conda activate renewable_maps` 
+&nbsp;4) Activate the conda environment from the root of the repo: `conda activate renewable_maps` and then `$python create_RES_maps.py` 
 
 &nbsp;5) You will be prompted to enter the project id (eg. `237753`)\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If the project id is incorrect then you will be prompted again.
