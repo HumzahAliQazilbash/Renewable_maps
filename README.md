@@ -5,7 +5,7 @@ This repo is deigned to show where particular projects occur and show all other 
 This gives insight into the additionality of renewable projects, showing how many similar projects occur within the same country.  All data is from Berkley's dataset of Verra projects.  There are 2682 projects in this registry and this repo allows the user to create maps for each one.
 
 ### Preview
-![image](https://github.com/HumzahAliQazilbash/Renewable_maps/assets/152615068/dcebe9b6-ee98-494e-b523-172a663d5a9f)
+![237753_RESProjectMap](https://github.com/HumzahAliQazilbash/Renewable_maps/assets/152615068/543c9d1d-6480-4029-80fd-1fb80e327ee7)
 
 ### Installation
 
