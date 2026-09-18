@@ -148,7 +148,7 @@ class PlotRES:
             plt.imshow(
                 plt.imread(icon_path[0]),
                 extent=(x0, x1, y0, y1),
-                zorder=30,
+                zorder=25,
                 alpha=0.9,
             )
 
